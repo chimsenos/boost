@@ -70,6 +70,11 @@ func (sa *sectorAccessor) UnsealSectorAt(ctx context.Context, sectorID abi.Secto
 				log.Debugf("http client close error: %s", err.Error())
 			}
 		}(r)
+		if r.StatusCode == 404 {
+			return nil, xerrors.New("not fond car")
+		} else if r.StatusCode == 401 {
+			return nil, xerrors.New("no permission")
+		}
 		data := mount.BytesMount{Bytes: r.ReadAll()}
 		return data.Fetch(ctx)
 	}
